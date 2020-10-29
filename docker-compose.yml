@@ -1,0 +1,29 @@
+version: "3"
+
+services:
+    db:
+        image: postgres:latest
+        environment:
+          - POSTGRES_USER=niyaz
+          - POSTGRES_PASSWORD=12345
+          - POSTGRES_DB=answersdb
+        volumes:
+          - ./sql-scripts/create-database-tables.sql:/docker-entrypoint-initdb.d/create-database-tables.sql
+        ports:
+          - 5432:5432
+    server:
+        build:
+            context: server/
+        image: server:latest
+        depends_on: 
+            - db
+    pytest:
+        build:
+            context: tests/
+        image: pytest:latest
+        depends_on:
+            - server
+
+
+volumes:
+    postgres_data:
